@@ -2,16 +2,25 @@ package graphics;
 
 import com.jtattoo.plaf.hifi.HiFiBorderFactory;
 import com.jtattoo.plaf.hifi.HiFiLookAndFeel;
+import game.GameEngine;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.Properties;
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -30,18 +39,103 @@ public class GUI extends javax.swing.JFrame {
     private CardLayout cardLayout = new CardLayout();
     Icon cross;
     Icon ring;
+    Icon nextIcon;
     boolean state = true;
+    private GameEngine gameEngine = new GameEngine();
 
     public GUI() {
         initComponents();
         startUpComponents();
+        nextIcon = cross;
+    }
+
+    public void markBox(int pos) {
+        nextIcon = ring;
+        switch (pos) {
+            case (0): {
+                Ibox1.setIcon(nextIcon);
+                break;
+            }
+            case (1): {
+                Ibox2.setIcon(nextIcon);
+                break;
+            }
+            case (2): {
+                Ibox3.setIcon(nextIcon);
+                break;
+            }
+            case (3): {
+                Ibox4.setIcon(nextIcon);
+                break;
+            }
+            case (4): {
+                Ibox5.setIcon(nextIcon);
+                break;
+            }
+            case (5): {
+                Ibox6.setIcon(nextIcon);
+                break;
+            }
+            case (6): {
+                Ibox7.setIcon(nextIcon);
+                break;
+            }
+            case (7): {
+                Ibox8.setIcon(nextIcon);
+                break;
+            }
+            case (8): {
+                Ibox9.setIcon(nextIcon);
+                break;
+            }
+        }
+        nextIcon = cross;
+    }
+
+    public void makeMove(int row, int column) {
+        gameEngine.play(row, column);
+        int ret_code = gameEngine.play();
+        switch (ret_code) {
+            case (1):
+                int msg1 = JOptionPane.showConfirmDialog(this, "Congradulations! You Won. Do You Want to Play a New Game?",
+                        "Tic Tac Toe Referee", JOptionPane.YES_NO_OPTION);
+                if (msg1 == JOptionPane.YES_OPTION) {
+                    //clean the game
+                }
+                //player wins
+                break;
+            case (2):
+                markBox(gameEngine.getCPUMove());
+                int msg = JOptionPane.showConfirmDialog(this, "Sorry! Computer Won. Do You Want to Play a New Game?",
+                        "Tic Tac Toe Referee", JOptionPane.YES_NO_OPTION);
+                if (msg == JOptionPane.YES_OPTION) {
+                    //clean the game
+                }
+                //computer wins
+                return;
+            case (3):
+                markBox(gameEngine.getCPUMove());
+                JOptionPane.showMessageDialog(this, "This is a Draw!");
+                //draw
+                return;
+        }
+        markBox(gameEngine.getCPUMove());
+        if (gameEngine.isADraw()) {
+            JOptionPane.showMessageDialog(this, "This is a Draw!");
+            int msg = JOptionPane.showConfirmDialog(this, "This is a Draw! Do You Want to Play a New Game?",
+                    "Tic Tac Toe Referee", JOptionPane.YES_NO_OPTION);
+            if (msg == JOptionPane.YES_OPTION) {
+                //clean the game
+            }
+        }
     }
 
     private void startUpComponents() {
         this.setLocationRelativeTo(null);
         setLayout();
-        gameBoxBorderDecorate();
+        addListners();
         loadPlaySymbol();
+        addAboutText();
     }
 
     private void setLayout() {
@@ -50,6 +144,7 @@ public class GUI extends javax.swing.JFrame {
         pnlLayout.add("pnlNewGame", pnlNewGame);
         pnlLayout.add("pnlGame", pnlGame);
         pnlLayout.add("pnlSinglePlayerGameMode", pnlSinglePlayerGameMode);
+        pnlLayout.add("pnlAbout", pnlAbout);
     }
 
     private void loadPlaySymbol() {
@@ -60,7 +155,7 @@ public class GUI extends javax.swing.JFrame {
         ring = new ImageIcon(ringUrl);
     }
 
-    private void gameBoxBorderDecorate() {
+    private void addListners() {
         box1.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -74,13 +169,9 @@ public class GUI extends javax.swing.JFrame {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (state) {
-                    Ibox1.setIcon(cross);
-                } else {
-                    Ibox1.setIcon(ring);
-                }
-                state = !state;
-                
+                Ibox1.setIcon(nextIcon);
+                makeMove(0, 0);
+
             }
 
         });
@@ -97,12 +188,8 @@ public class GUI extends javax.swing.JFrame {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (state) {
-                    Ibox2.setIcon(cross);
-                } else {
-                    Ibox2.setIcon(ring);
-                }
-                state = !state;
+                Ibox2.setIcon(nextIcon);
+                makeMove(0, 1);
             }
         });
         box3.addMouseListener(new MouseAdapter() {
@@ -118,12 +205,8 @@ public class GUI extends javax.swing.JFrame {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (state) {
-                    Ibox3.setIcon(cross);
-                } else {
-                    Ibox3.setIcon(ring);
-                }
-                state = !state;
+                Ibox3.setIcon(nextIcon);
+                makeMove(0, 2);
             }
         });
         box4.addMouseListener(new MouseAdapter() {
@@ -139,12 +222,8 @@ public class GUI extends javax.swing.JFrame {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (state) {
-                    Ibox4.setIcon(cross);
-                } else {
-                    Ibox4.setIcon(ring);
-                }
-                state = !state;
+                Ibox4.setIcon(nextIcon);
+                makeMove(1, 0);
             }
         });
         box5.addMouseListener(new MouseAdapter() {
@@ -160,12 +239,8 @@ public class GUI extends javax.swing.JFrame {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (state) {
-                    Ibox5.setIcon(cross);
-                } else {
-                    Ibox5.setIcon(ring);
-                }
-                state = !state;
+                Ibox5.setIcon(nextIcon);
+                makeMove(1, 1);
             }
         });
         box6.addMouseListener(new MouseAdapter() {
@@ -181,12 +256,8 @@ public class GUI extends javax.swing.JFrame {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (state) {
-                    Ibox6.setIcon(cross);
-                } else {
-                    Ibox6.setIcon(ring);
-                }
-                state = !state;
+                Ibox6.setIcon(nextIcon);
+                makeMove(1, 2);
             }
         });
         box7.addMouseListener(new MouseAdapter() {
@@ -202,12 +273,8 @@ public class GUI extends javax.swing.JFrame {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (state) {
-                    Ibox7.setIcon(cross);
-                } else {
-                    Ibox7.setIcon(ring);
-                }
-                state = !state;
+                Ibox7.setIcon(nextIcon);
+                makeMove(2, 0);
             }
         });
         box8.addMouseListener(new MouseAdapter() {
@@ -223,12 +290,8 @@ public class GUI extends javax.swing.JFrame {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (state) {
-                    Ibox8.setIcon(cross);
-                } else {
-                    Ibox8.setIcon(ring);
-                }
-                state = !state;
+                Ibox8.setIcon(nextIcon);
+                makeMove(2, 1);
             }
         });
         box9.addMouseListener(new MouseAdapter() {
@@ -244,12 +307,30 @@ public class GUI extends javax.swing.JFrame {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (state) {
-                    Ibox9.setIcon(cross);
-                } else {
-                    Ibox9.setIcon(ring);
-                }
-                state = !state;
+                Ibox9.setIcon(nextIcon);
+                makeMove(2, 2);
+            }
+        });
+    }
+
+    private void addAboutText() {
+        lblAboutTxt.setText("<html> The Tic Tac Toe game has been developed as a project, done<br>under  "
+                + "the  course  module  CS2202 - Programming Challenge."
+                + "<br>The game has 2 player  modes, Multiplayer and Singleplayer."
+                + "<br>Singleplayer game mode has been developed with an AI player<br>"
+                + "which comprises with three difficulty levels.  "
+                + "Multiplayer<br>game mode has been developed to play a tic tac toe session<br>"
+                + "with another player having the  same  game over an internet<br>connection. "
+                + "The game has been developed  by Nadheesh Jihan<br>and Dulanjaya  Tennekoon,  undergraduates,  Department  of"
+                + "<br>Computer Science and  Engineering, University of Moratuwa,<br>Sri Lanka. All Rights Reserved.</html>");
+    }
+
+    private void addGameWelcomeName() {
+        txtPlayerName.addCaretListener(new CaretListener() {
+
+            @Override
+            public void caretUpdate(CaretEvent e) {
+                lblGameWelcome.setText(lblGameWelcome.getText().concat(((JTextField) e.getSource()).getText()));
             }
         });
     }
@@ -277,21 +358,24 @@ public class GUI extends javax.swing.JFrame {
         lblHeadingTicTacToe = new javax.swing.JLabel();
         pnlNewGame = new javax.swing.JPanel();
         pnlNewGameHeading = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        pnlNewGameModeSwitches = new javax.swing.JPanel();
+        pnlGameModeButtons = new javax.swing.JPanel();
         btnSinglePlayer = new javax.swing.JButton();
         btnMultiPlayer = new javax.swing.JButton();
-        btnBack = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
+        btnBack6 = new javax.swing.JButton();
         pnlSinglePlayerGameMode = new javax.swing.JPanel();
         pnlModeSelection = new javax.swing.JPanel();
         pnlGameInfo = new javax.swing.JPanel();
         pnlModes = new javax.swing.JPanel();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
-        jRadioButton3 = new javax.swing.JRadioButton();
+        rbHardMode = new javax.swing.JRadioButton();
+        rbMediumMode = new javax.swing.JRadioButton();
+        rbEasyMode = new javax.swing.JRadioButton();
+        chkFirstPlayerPC = new javax.swing.JCheckBox();
         txtPlayerName = new javax.swing.JTextField();
         lblPlayerName = new javax.swing.JLabel();
-        jButton3 = new javax.swing.JButton();
+        btnPlay = new javax.swing.JButton();
+        btnBackFromSinglePlayer = new javax.swing.JButton();
         pnlSinglePlayerHeading = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         pnlGame = new javax.swing.JPanel();
@@ -314,6 +398,13 @@ public class GUI extends javax.swing.JFrame {
         Ibox8 = new javax.swing.JLabel();
         box9 = new javax.swing.JPanel();
         Ibox9 = new javax.swing.JLabel();
+        jButton7 = new javax.swing.JButton();
+        lblGameWelcome = new javax.swing.JLabel();
+        lblGameGameMode = new javax.swing.JLabel();
+        pnlAbout = new javax.swing.JPanel();
+        lblAboutHeading = new javax.swing.JLabel();
+        lblAboutTxt = new javax.swing.JLabel();
+        jButton4 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Tic Tac Toe 1.0");
@@ -348,6 +439,11 @@ public class GUI extends javax.swing.JFrame {
         jButton1.setText("High Scores");
 
         jButton2.setText("About");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout pnlSwitches_MainMenuLayout = new javax.swing.GroupLayout(pnlSwitches_MainMenu);
         pnlSwitches_MainMenu.setLayout(pnlSwitches_MainMenuLayout);
@@ -405,15 +501,14 @@ public class GUI extends javax.swing.JFrame {
         pnlMenuLayout.setHorizontalGroup(
             pnlMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlMenuLayout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(pnlMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlMenuLayout.createSequentialGroup()
-                        .addGap(150, 150, 150)
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(pnlSwitches_MainMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(39, 39, 39)
+                        .addGap(46, 46, 46)
                         .addComponent(lblCopyRight, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(pnlMenuLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(pnlHeadingTicTacToe, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(pnlHeadingTicTacToe, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         pnlMenuLayout.setVerticalGroup(
@@ -430,70 +525,87 @@ public class GUI extends javax.swing.JFrame {
 
         pnlLayout.add(pnlMenu, "card2");
 
-        pnlNewGameHeading.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        btnSinglePlayer.setText("Single Player");
-        btnSinglePlayer.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSinglePlayerActionPerformed(evt);
-            }
-        });
-
-        btnMultiPlayer.setText("Multi Player");
-        btnMultiPlayer.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnMultiPlayerActionPerformed(evt);
-            }
-        });
-
-        btnBack.setText("Back");
-        btnBack.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBackActionPerformed(evt);
-            }
-        });
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/GameMode.png"))); // NOI18N
 
         javax.swing.GroupLayout pnlNewGameHeadingLayout = new javax.swing.GroupLayout(pnlNewGameHeading);
         pnlNewGameHeading.setLayout(pnlNewGameHeadingLayout);
         pnlNewGameHeadingLayout.setHorizontalGroup(
             pnlNewGameHeadingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlNewGameHeadingLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pnlNewGameHeadingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(btnMultiPlayer, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnSinglePlayer, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
-                    .addComponent(btnBack, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel5)
+                .addGap(46, 46, 46))
         );
         pnlNewGameHeadingLayout.setVerticalGroup(
             pnlNewGameHeadingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlNewGameHeadingLayout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(jLabel5)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        pnlGameModeButtons.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        btnSinglePlayer.setText("Single Player");
+        btnSinglePlayer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSinglePlayerbtnSinglePlayer4btnSinglePlayerActionPerformed(evt);
+            }
+        });
+
+        btnMultiPlayer.setText("Multi Player");
+        btnMultiPlayer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMultiPlayerbtnMultiPlayer4btnMultiPlayerActionPerformed(evt);
+            }
+        });
+
+        btnBack6.setText("Back");
+        btnBack6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBack6btnBack4btnBackActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout pnlGameModeButtonsLayout = new javax.swing.GroupLayout(pnlGameModeButtons);
+        pnlGameModeButtons.setLayout(pnlGameModeButtonsLayout);
+        pnlGameModeButtonsLayout.setHorizontalGroup(
+            pnlGameModeButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlGameModeButtonsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlGameModeButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(btnMultiPlayer, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnSinglePlayer, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
+                    .addComponent(btnBack6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        pnlGameModeButtonsLayout.setVerticalGroup(
+            pnlGameModeButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlGameModeButtonsLayout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(btnSinglePlayer, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnMultiPlayer, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnBack, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnBack6, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/GameMode.png"))); // NOI18N
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(61, Short.MAX_VALUE)
-                .addComponent(jLabel3)
-                .addGap(46, 46, 46))
+        javax.swing.GroupLayout pnlNewGameModeSwitchesLayout = new javax.swing.GroupLayout(pnlNewGameModeSwitches);
+        pnlNewGameModeSwitches.setLayout(pnlNewGameModeSwitchesLayout);
+        pnlNewGameModeSwitchesLayout.setHorizontalGroup(
+            pnlNewGameModeSwitchesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlNewGameModeSwitchesLayout.createSequentialGroup()
+                .addGap(150, 150, 150)
+                .addComponent(pnlGameModeButtons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(150, 150, 150))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel3)
-                .addContainerGap(13, Short.MAX_VALUE))
+        pnlNewGameModeSwitchesLayout.setVerticalGroup(
+            pnlNewGameModeSwitchesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlNewGameModeSwitchesLayout.createSequentialGroup()
+                .addGap(26, 26, 26)
+                .addComponent(pnlGameModeButtons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(75, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout pnlNewGameLayout = new javax.swing.GroupLayout(pnlNewGame);
@@ -501,66 +613,84 @@ public class GUI extends javax.swing.JFrame {
         pnlNewGameLayout.setHorizontalGroup(
             pnlNewGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlNewGameLayout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(pnlNewGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pnlNewGameHeading, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(pnlNewGameLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(pnlNewGameModeSwitches, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlNewGameLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(pnlNewGameHeading, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(156, 156, 156))
         );
         pnlNewGameLayout.setVerticalGroup(
             pnlNewGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlNewGameLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(51, 51, 51)
                 .addComponent(pnlNewGameHeading, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(65, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pnlNewGameModeSwitches, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
-        pnlLayout.add(pnlNewGame, "card6");
+        pnlLayout.add(pnlNewGame, "card7");
 
-        buttonGroup1.add(jRadioButton1);
-        jRadioButton1.setText("Hard Mode");
+        buttonGroup1.add(rbHardMode);
+        rbHardMode.setSelected(true);
+        rbHardMode.setText("Hard Mode");
 
-        buttonGroup1.add(jRadioButton2);
-        jRadioButton2.setText("Medium Mode");
+        buttonGroup1.add(rbMediumMode);
+        rbMediumMode.setText("Medium Mode");
 
-        buttonGroup1.add(jRadioButton3);
-        jRadioButton3.setText("Easy Mode");
+        buttonGroup1.add(rbEasyMode);
+        rbEasyMode.setText("Easy Mode");
+
+        chkFirstPlayerPC.setText("First Player is Computer");
 
         javax.swing.GroupLayout pnlModesLayout = new javax.swing.GroupLayout(pnlModes);
         pnlModes.setLayout(pnlModesLayout);
         pnlModesLayout.setHorizontalGroup(
             pnlModesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlModesLayout.createSequentialGroup()
-                .addGap(38, 38, 38)
+                .addContainerGap()
                 .addGroup(pnlModesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jRadioButton1)
-                    .addComponent(jRadioButton2)
-                    .addComponent(jRadioButton3))
-                .addContainerGap(17, Short.MAX_VALUE))
+                    .addGroup(pnlModesLayout.createSequentialGroup()
+                        .addComponent(rbMediumMode)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
+                        .addComponent(chkFirstPlayerPC))
+                    .addGroup(pnlModesLayout.createSequentialGroup()
+                        .addGroup(pnlModesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(rbHardMode)
+                            .addComponent(rbEasyMode))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         pnlModesLayout.setVerticalGroup(
             pnlModesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlModesLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jRadioButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jRadioButton2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jRadioButton3)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(rbHardMode)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlModesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(rbMediumMode)
+                    .addComponent(chkFirstPlayerPC))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(rbEasyMode)
+                .addContainerGap(13, Short.MAX_VALUE))
         );
 
         txtPlayerName.setToolTipText("Name");
 
         lblPlayerName.setText("Player Name");
 
-        jButton3.setText("Play");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        btnPlay.setText("Play");
+        btnPlay.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                btnPlayActionPerformed(evt);
+            }
+        });
+
+        btnBackFromSinglePlayer.setText("Back");
+        btnBackFromSinglePlayer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBackFromSinglePlayerActionPerformed(evt);
             }
         });
 
@@ -569,17 +699,22 @@ public class GUI extends javax.swing.JFrame {
         pnlGameInfoLayout.setHorizontalGroup(
             pnlGameInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlGameInfoLayout.createSequentialGroup()
-                .addGap(76, 76, 76)
-                .addComponent(lblPlayerName)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(pnlGameInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pnlModes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtPlayerName, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(73, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlGameInfoLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(179, 179, 179))
+                    .addGroup(pnlGameInfoLayout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnPlay, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnBackFromSinglePlayer, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pnlGameInfoLayout.createSequentialGroup()
+                        .addGap(76, 76, 76)
+                        .addGroup(pnlGameInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(pnlModes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(pnlGameInfoLayout.createSequentialGroup()
+                                .addComponent(lblPlayerName)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtPlayerName, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 63, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         pnlGameInfoLayout.setVerticalGroup(
             pnlGameInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -588,11 +723,13 @@ public class GUI extends javax.swing.JFrame {
                 .addGroup(pnlGameInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblPlayerName)
                     .addComponent(txtPlayerName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addGap(8, 8, 8)
                 .addComponent(pnlModes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton3)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(pnlGameInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnPlay)
+                    .addComponent(btnBackFromSinglePlayer))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout pnlModeSelectionLayout = new javax.swing.GroupLayout(pnlModeSelection);
@@ -839,24 +976,97 @@ public class GUI extends javax.swing.JFrame {
 
         pnlGameBoard.add(box9);
 
+        jButton7.setText("Home");
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
+
+        lblGameWelcome.setFont(new java.awt.Font("Comic Sans MS", 0, 24)); // NOI18N
+        lblGameWelcome.setText("Welcome ");
+
+        lblGameGameMode.setText("Game Mode : ");
+
         javax.swing.GroupLayout pnlGameLayout = new javax.swing.GroupLayout(pnlGame);
         pnlGame.setLayout(pnlGameLayout);
         pnlGameLayout.setHorizontalGroup(
             pnlGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlGameLayout.createSequentialGroup()
-                .addGap(105, 105, 105)
-                .addComponent(pnlGameBoard, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(105, Short.MAX_VALUE))
+                .addGroup(pnlGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlGameLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(lblGameGameMode)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton7))
+                    .addGroup(pnlGameLayout.createSequentialGroup()
+                        .addGap(105, 105, 105)
+                        .addComponent(pnlGameBoard, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 95, Short.MAX_VALUE)))
+                .addContainerGap())
+            .addGroup(pnlGameLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblGameWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 349, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnlGameLayout.setVerticalGroup(
             pnlGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlGameLayout.createSequentialGroup()
-                .addGap(80, 80, 80)
+                .addGap(18, 18, 18)
+                .addComponent(lblGameWelcome)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(pnlGameBoard, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(46, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(pnlGameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton7)
+                    .addComponent(lblGameGameMode))
+                .addContainerGap(29, Short.MAX_VALUE))
         );
 
         pnlLayout.add(pnlGame, "card3");
+
+        lblAboutHeading.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        lblAboutHeading.setText("About");
+
+        lblAboutTxt.setFont(new java.awt.Font("Segoe UI Symbol", 0, 12)); // NOI18N
+        lblAboutTxt.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        jButton4.setText("Back");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout pnlAboutLayout = new javax.swing.GroupLayout(pnlAbout);
+        pnlAbout.setLayout(pnlAboutLayout);
+        pnlAboutLayout.setHorizontalGroup(
+            pnlAboutLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlAboutLayout.createSequentialGroup()
+                .addContainerGap(83, Short.MAX_VALUE)
+                .addGroup(pnlAboutLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlAboutLayout.createSequentialGroup()
+                        .addGroup(pnlAboutLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblAboutHeading)
+                            .addComponent(lblAboutTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(82, 82, 82))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlAboutLayout.createSequentialGroup()
+                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
+        );
+        pnlAboutLayout.setVerticalGroup(
+            pnlAboutLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlAboutLayout.createSequentialGroup()
+                .addGap(64, 64, 64)
+                .addComponent(lblAboutHeading)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblAboutTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 62, Short.MAX_VALUE)
+                .addComponent(jButton4)
+                .addContainerGap())
+        );
+
+        pnlLayout.add(pnlAbout, "card6");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -890,21 +1100,61 @@ public class GUI extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_btnExitActionPerformed
 
-    private void btnSinglePlayerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSinglePlayerActionPerformed
-        cardLayout.show(pnlLayout, "pnlSinglePlayerGameMode");
-    }//GEN-LAST:event_btnSinglePlayerActionPerformed
-
-    private void btnMultiPlayerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMultiPlayerActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnMultiPlayerActionPerformed
-
-    private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        cardLayout.show(pnlLayout, "pnlMenu");
-    }//GEN-LAST:event_btnBackActionPerformed
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void btnPlayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPlayActionPerformed
         cardLayout.show(pnlLayout, "pnlGame");
-    }//GEN-LAST:event_jButton3ActionPerformed
+        lblGameWelcome.setText("Welcome ".concat(txtPlayerName.getText()));
+        Enumeration<AbstractButton> modeSelector = buttonGroup1.getElements();
+        int modeCount = 0;
+        while (modeSelector.hasMoreElements()) {
+            JRadioButton modeSelect = (JRadioButton) modeSelector.nextElement();
+            if (modeSelect.isSelected()) {
+                gameEngine = new GameEngine(modeCount, txtPlayerName.getText(), !chkFirstPlayerPC.isSelected());
+                lblGameGameMode.setText("Game Mode : ".concat(modeSelect.getText()));
+            }
+        };
+        if (chkFirstPlayerPC.isSelected()) {
+            gameEngine.play();
+            markBox(gameEngine.getCPUMove());
+        }
+
+    }//GEN-LAST:event_btnPlayActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        cardLayout.show(pnlLayout, "pnlAbout");
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void btnBack6btnBack4btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBack6btnBack4btnBackActionPerformed
+        cardLayout.show(pnlLayout, "pnlMenu");
+    }//GEN-LAST:event_btnBack6btnBack4btnBackActionPerformed
+
+    private void btnMultiPlayerbtnMultiPlayer4btnMultiPlayerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMultiPlayerbtnMultiPlayer4btnMultiPlayerActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnMultiPlayerbtnMultiPlayer4btnMultiPlayerActionPerformed
+
+    private void btnSinglePlayerbtnSinglePlayer4btnSinglePlayerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSinglePlayerbtnSinglePlayer4btnSinglePlayerActionPerformed
+        cardLayout.show(pnlLayout, "pnlSinglePlayerGameMode");
+    }//GEN-LAST:event_btnSinglePlayerbtnSinglePlayer4btnSinglePlayerActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        cardLayout.show(pnlLayout, "pnlMenu");
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void btnBackFromSinglePlayerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackFromSinglePlayerActionPerformed
+        cardLayout.show(pnlLayout, "pnlNewGame");
+    }//GEN-LAST:event_btnBackFromSinglePlayerActionPerformed
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        cardLayout.show(pnlLayout, "pnlMenu");
+        Ibox1.setIcon(null);
+        Ibox2.setIcon(null);
+        Ibox3.setIcon(null);
+        Ibox4.setIcon(null);
+        Ibox5.setIcon(null);
+        Ibox6.setIcon(null);
+        Ibox7.setIcon(null);
+        Ibox8.setIcon(null);
+        Ibox9.setIcon(null);
+    }//GEN-LAST:event_jButton7ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -915,7 +1165,7 @@ public class GUI extends javax.swing.JFrame {
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
-        
+
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -966,28 +1216,34 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JPanel box7;
     private javax.swing.JPanel box8;
     private javax.swing.JPanel box9;
-    private javax.swing.JButton btnBack;
+    private javax.swing.JButton btnBack6;
+    private javax.swing.JButton btnBackFromSinglePlayer;
     private javax.swing.JButton btnContinue;
     private javax.swing.JButton btnExit;
     private javax.swing.JButton btnMultiPlayer;
     private javax.swing.JButton btnNewGame;
+    private javax.swing.JButton btnPlay;
     private javax.swing.JButton btnSinglePlayer;
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JCheckBox chkFirstPlayerPC;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton7;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JRadioButton jRadioButton3;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel lblAboutHeading;
+    private javax.swing.JLabel lblAboutTxt;
     private javax.swing.JLabel lblCopyRight;
+    private javax.swing.JLabel lblGameGameMode;
+    private javax.swing.JLabel lblGameWelcome;
     private javax.swing.JLabel lblHeadingTicTacToe;
     private javax.swing.JLabel lblPlayerName;
+    private javax.swing.JPanel pnlAbout;
     private javax.swing.JPanel pnlGame;
     private javax.swing.JPanel pnlGameBoard;
     private javax.swing.JPanel pnlGameInfo;
+    private javax.swing.JPanel pnlGameModeButtons;
     private javax.swing.JPanel pnlHeadingTicTacToe;
     private javax.swing.JPanel pnlLayout;
     private javax.swing.JPanel pnlMenu;
@@ -995,9 +1251,13 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JPanel pnlModes;
     private javax.swing.JPanel pnlNewGame;
     private javax.swing.JPanel pnlNewGameHeading;
+    private javax.swing.JPanel pnlNewGameModeSwitches;
     private javax.swing.JPanel pnlSinglePlayerGameMode;
     private javax.swing.JPanel pnlSinglePlayerHeading;
     private javax.swing.JPanel pnlSwitches_MainMenu;
+    private javax.swing.JRadioButton rbEasyMode;
+    private javax.swing.JRadioButton rbHardMode;
+    private javax.swing.JRadioButton rbMediumMode;
     private javax.swing.JTextField txtPlayerName;
     // End of variables declaration//GEN-END:variables
 }
