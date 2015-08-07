@@ -307,9 +307,6 @@
             <Component class="javax.swing.JLabel" name="lblCopyRight">
               <Properties>
                 <Property name="text" type="java.lang.String" value="&#xa9; CodeGamers Inc."/>
-                <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[96, 14]"/>
-                </Property>
               </Properties>
             </Component>
             <Container class="javax.swing.JPanel" name="pnlHeadingTicTacToe">

@@ -8,7 +8,6 @@ import game.model.Player;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.HeadlessException;
-import static java.awt.PageAttributes.MediaType.A;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -24,8 +23,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractButton;
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
@@ -40,6 +37,8 @@ import javax.swing.Timer;
 import javax.swing.UIManager;
 import networkEngine.GameClient;
 import networkEngine.GameServer;
+import org.apache.log4j.Logger;
+ 
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -59,19 +58,17 @@ public class GUI extends javax.swing.JFrame {
     private Icon cross;
     private Icon ring;
     private Icon nextIcon;
-    private boolean state;
     private GameEngine gameEngine;
     private boolean isFinish;
     private boolean isStarted;
-    private boolean isSinglePlay;
     private final static SaveHandler saveHandler = new SaveHandler();
     private final static PlayerHandler playerHandler = new PlayerHandler();
     private int mode = 0;
     private Thread multiPlayerClient;
     private Thread multiPlayerServer;
+    private static final Logger logger = Logger.getLogger(GUI.class);
 
     public GUI() {
-        state = true;
         gameEngine = new GameEngine();
         isFinish = false;
         isStarted = false;
@@ -79,6 +76,7 @@ public class GUI extends javax.swing.JFrame {
         startUpComponents();
         nextIcon = cross;
         addPropertyChangeListener();
+        logger.debug("gui interface initiated");
     }
 
     public void markBox(int pos) {
@@ -2010,7 +2008,7 @@ public class GUI extends javax.swing.JFrame {
 
                     }
                 } catch (SQLException ex) {
-                    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+                    logger.debug(ex.getSQLState());
                     JOptionPane.showMessageDialog(this, "Error! Saving Failed");
                 }
             } else {
