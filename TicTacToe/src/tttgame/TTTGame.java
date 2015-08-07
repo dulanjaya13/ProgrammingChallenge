@@ -39,6 +39,7 @@ public class TTTGame {
         boolean cpuWin = false;
         boolean isTie= true;
         while (!board.isFull()) {
+
             if (firstHuman) {
                 int row = scanner.nextInt();
                 int column = scanner.nextInt();
